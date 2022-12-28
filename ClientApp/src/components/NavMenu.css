@@ -1,4 +1,9 @@
-﻿a.navbar-brand {
+﻿.navbar-brand{
+  /*todo: remove VVV*/
+  color: #60B5D7 !important; 
+}
+
+a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;

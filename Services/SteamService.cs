@@ -24,8 +24,9 @@ public class SteamService : ISteamService{
         }
 
         var matchedGames = new List<Game>();
-        
-        foreach (var appId in appIdsTotal.Take(5)) {
+
+        var rand = new Random();
+        foreach (var appId in appIdsTotal.OrderBy(x => rand.Next(0, appIdsTotal.Count())).Take(3)) {
             var gameInfo = await GetGameInfo(appId);
             matchedGames.Add(gameInfo);
         }
@@ -56,7 +57,8 @@ public class SteamService : ISteamService{
     public async Task<Game> GetGameInfo(string appId) {
         using var httpClient = new HttpClient();
         var response = await httpClient.GetAsync($"https://store.steampowered.com/api/appdetails?appids={appId}");
-        var desGame = JsonConvert.DeserializeObject<Dictionary<string, AppDetails>>(await response.Content.ReadAsStringAsync());
+        var gameString = await response.Content.ReadAsStringAsync();
+        var desGame = JsonConvert.DeserializeObject<Dictionary<string, AppDetails>>(gameString);
         var appDetails = desGame?[appId];
         var game = _mapper.Map<Game>(appDetails);
     

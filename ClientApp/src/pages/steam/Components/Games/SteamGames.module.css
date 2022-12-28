@@ -1,0 +1,13 @@
+﻿.gamePanel{
+    margin: 15px;
+    padding: 15px;
+}
+
+.gameInfoPanel{
+    margin: 15px;
+    padding: 15px;
+}
+
+.gameImage{
+    width: 300px;
+}
