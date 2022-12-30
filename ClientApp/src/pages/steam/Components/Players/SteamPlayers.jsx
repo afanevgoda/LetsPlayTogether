@@ -1,17 +1,19 @@
-﻿import {getPlayersInfo, getMatchedGames} from "../../../../service/api";
+﻿import {getPlayersInfo, getMatchedGames, createPoll} from "../../../../service/api";
 import React, {Component, useState} from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
 import styles from './Players.module.css';
 import Button from "@mui/material/Button";
 import Input from "@mui/material/Input";
-import {Divider, IconButton, InputBase} from "@mui/material";
+import {Divider, IconButton} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
-export function SteamPlayers({setMatchedGames}) {
+export function SteamPlayers({setMatchedGames, poll, setPoll, isShared}) {
 
     const [players, setPlayers] = useState([]);
     const [playersInfo, setPlayersInfo] = useState([]);
+    // for faster update from api itself
+    const [pollId, setPollId] = useState(poll?.id);
 
     const addTeammate = () => {
         setPlayers([...players, {tempId: players.length + 1}]);
@@ -20,8 +22,9 @@ export function SteamPlayers({setMatchedGames}) {
     const getPlayers = async () => {
         getPlayersInfo(players)
             .then(response => response.json())
-            .then(result => {
+            .then(async result => {
                 setPlayersInfo(result);
+                await getGames(result);
             });
     }
 
@@ -37,16 +40,22 @@ export function SteamPlayers({setMatchedGames}) {
         setPlayers(updatedPlayers)
     }
 
-    const getGames = async () => {
-        getMatchedGames(playersInfo)
+    const getGames = async (info) => {
+        getMatchedGames(info)
             .then(response => response.json())
             .then(result => {
                 setMatchedGames(result);
+                createPoll(players, result)
+                    .then(x => x.text())
+                    .then(x => {
+                        setPollId(x);
+                        setPoll({id: x});
+                    });
             });
     }
 
     const playerInputComp = (player) => {
-        return (<Grid xs={2} id={player.tempId}>
+        return (<Grid xs={2} key={player.tempId}>
             <Paper
                 className={styles.playerPanel}
             >
@@ -56,15 +65,18 @@ export function SteamPlayers({setMatchedGames}) {
                     disableUnderline={true}
                     placeholder="Profile URL"
                 />
-                <IconButton type="button" sx={{p: '10px'}} aria-label="search">
-                    <CloseIcon color="primary" onClick={() => removePlayer(player.tempId)}/>
+                <IconButton
+                    type="button" sx={{p: '10px'}}
+                    aria-label="search"
+                    onClick={() => removePlayer(player.tempId)}>
+                    <CloseIcon color="primary"/>
                 </IconButton>
             </Paper>
         </Grid>)
     };
 
     const playerPanelComp = (nickname, avatarUrl) => {
-        return (<Grid xs={3} id={nickname}>
+        return (<Grid xs={3} id={nickname} key={nickname}>
             <Paper className={styles.playerInfoPanel}>
                 <span className={styles.playerAvatar}>
                     <img src={avatarUrl} alt={"none"}></img>
@@ -74,8 +86,28 @@ export function SteamPlayers({setMatchedGames}) {
         </Grid>)
     };
 
+    function getShareLink(poll) {
+        if (window.location.search.includes('poll')) return window.location.href;
+
+        if (poll?.id) return `${window.location}?poll=${poll?.id}`;
+
+        if (pollId) return `${window.location}?poll=${pollId}`;
+    }
+
+    function getResultsLink(poll) {
+        if (poll?.id) return `${window.location.origin}/poll?pollId=${poll.id}`;
+
+        if (pollId) return `${window.location.origin}/poll?pollId=${pollId}`;
+    }
+
     return (<>
-        <Paper className={styles.box}>
+        {poll?.id && pollId && <div>
+            <span>Share this poll with this link: <a href={getShareLink()}>{getShareLink()}</a></span>
+            <div>
+                <span>Find poll results <a href={getResultsLink()}>here</a></span>
+            </div>
+        </div>}
+        {!isShared && <Paper className={styles.box}>
             <Grid container spacing={2}>
                 {players.map(x => playerInputComp(x))}
                 <Grid>
@@ -89,22 +121,22 @@ export function SteamPlayers({setMatchedGames}) {
                     </Paper>
                 </Grid>
             </Grid>
-        </Paper>
-        <Button
+        </Paper>}
+        {!isShared && <Button
             variant='primary'
             size="small"
             onClick={getPlayers}>
-            Check players
-        </Button>
-        <Divider />
-        <Grid container spacing={2}>
+            Get common games!
+        </Button>}
+        <Divider/>
+        <Grid container spacing={2} className={styles.gamesMainGrid}>
             {playersInfo.map(x => playerPanelComp(x.nickname, x.avatarUrl))}
         </Grid>
-        <Button
-            variant='primary'
-            size="small"
-            onClick={getGames}>
-            Get Games!
-        </Button>
+        {/*<Button*/}
+        {/*    variant='primary'*/}
+        {/*    size="small"*/}
+        {/*    onClick={getGames}>*/}
+        {/*    Get common games!*/}
+        {/*</Button>*/}
     </>)
 }

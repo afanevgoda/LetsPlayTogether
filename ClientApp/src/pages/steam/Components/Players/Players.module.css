@@ -33,11 +33,15 @@
     margin: 5px 15px;
 }
 
-.playerInput{
+.playerInput {
     height: 35px;
 }
 
-.addTeammateButton{
+.addTeammateButton {
     border: 5px white;
     height: 35px;
+}
+
+.gamesMainGrid {
+    margin: 15px;
 }

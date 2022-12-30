@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using DataAccess.Repositories;
 using LetsPlayTogether.Models;
+using LetsPlayTogether.Models.DTO;
 using LetsPlayTogether.Models.Steam;
 using LetsPlayTogether.Models.Steam.Responses;
 using Newtonsoft.Json;
@@ -10,30 +12,42 @@ namespace LetsPlayTogether.Services;
 public class SteamService : ISteamService{
     private string _steamKey = "645EA8586FBD3628FF6A01A9338128BB";
     private readonly IMapper _mapper;
+    private readonly IGameRepository _games;
 
-    public SteamService(IMapper mapper) {
+    public SteamService(IMapper mapper, IGameRepository games) {
         _mapper = mapper;
+        _games = games;
     }
 
     public async Task<List<Game>> GetMatchedGames(List<string> userIds) {
         var result = await GetPlayersInfo(userIds);
-        
+
         var appIdsTotal = result.SelectMany(x => x.OwnedAppIds);
         foreach (var player in result) {
             appIdsTotal = appIdsTotal.Intersect(player.OwnedAppIds).ToList();
         }
 
-        var matchedGames = new List<Game>();
-
-        var rand = new Random();
-        foreach (var appId in appIdsTotal.OrderBy(x => rand.Next(0, appIdsTotal.Count())).Take(3)) {
-            var gameInfo = await GetGameInfo(appId);
-            matchedGames.Add(gameInfo);
-        }
-        
-        return matchedGames;
+        return await GetGames(appIdsTotal.ToList());
     }
 
+    public async Task<List<Game>> GetGames(List<string> gameAppIds) {
+        var matchedGames = new List<Game>();
+
+        foreach (var appId in gameAppIds) {
+            var gameInfo = await GetGameInfoFromApiIfRequired(appId);
+            
+            if(!gameInfo.IsOk || string.IsNullOrEmpty(gameInfo.Tags))
+                continue;
+
+            if (gameInfo.Tags.Contains("Multi-player, , ") ||
+                gameInfo.Tags.Contains("Co-op") ||
+                gameInfo.Tags.Contains("Online Co-op"))
+                matchedGames.Add(gameInfo);
+        }
+
+        return matchedGames;
+    }
+    
     public async Task<List<Player>> GetPlayersInfo(List<string> userIds) {
         using var httpClient = new HttpClient();
 
@@ -60,8 +74,14 @@ public class SteamService : ISteamService{
         var gameString = await response.Content.ReadAsStringAsync();
         var desGame = JsonConvert.DeserializeObject<Dictionary<string, AppDetails>>(gameString);
         var appDetails = desGame?[appId];
+
+        if (appDetails?.Data == null)
+            return new Game {
+                AppId = appId,
+                IsOk = false
+            };
+
         var game = _mapper.Map<Game>(appDetails);
-    
         return game;
     }
 
@@ -69,7 +89,23 @@ public class SteamService : ISteamService{
         using var httpClient = new HttpClient();
         var gamesResponse = await httpClient.GetAsync(
             $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={_steamKey}&steamid={userId}&format=json");
-        var desGames = JsonConvert.DeserializeObject<GetOwnedGames>(await gamesResponse.Content.ReadAsStringAsync());
-        return _mapper.Map<List<Game>>(desGames).Select(x => x.Id).ToList();
+        var stringified = await gamesResponse.Content.ReadAsStringAsync();
+        var desGames = JsonConvert.DeserializeObject<GetOwnedGames>(stringified);
+        return desGames?.Response.Games.Select(x => x.AppId).ToList() ?? new List<string>();
+    }
+
+    private async Task<Game> GetGameInfoFromApiIfRequired(string appId) {
+        Game result;
+
+        var gameFromDb = await _games.GetByAppId(appId);
+
+        if (gameFromDb == null) {
+            result = await GetGameInfo(appId);
+            var gameData = _mapper.Map<DataAccess.Models.Game>(result);
+            await _games.Add(gameData);
+        }
+        else result = _mapper.Map<Game>(gameFromDb);
+
+        return result;
     }
 }

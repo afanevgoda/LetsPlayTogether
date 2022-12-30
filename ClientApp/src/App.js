@@ -9,6 +9,7 @@ import {Steam} from "./pages/steam/Steam";
 import './custom.css'
 import {createTheme} from "@mui/material/styles";
 import {CssBaseline, ThemeProvider} from "@mui/material";
+import {PollResult} from "./pages/steam/PollResult";
 
 export default class App extends Component {
     static displayName = App.name;
@@ -53,6 +54,7 @@ export default class App extends Component {
                     <Route path='/counter' component={Counter}/>
                     <Route path='/fetch-data' component={FetchData}/>
                     <Route path='/steam' component={Steam}/>
+                    <Route path='/poll' component={PollResult}/>
                 </Layout>
             </ThemeProvider>
         );

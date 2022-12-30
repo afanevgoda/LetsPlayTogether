@@ -1,4 +1,6 @@
-﻿namespace LetsPlayTogether.Models;
+﻿using LetsPlayTogether.Models.DTO;
+
+namespace LetsPlayTogether.Models;
 
 public class Player{
     

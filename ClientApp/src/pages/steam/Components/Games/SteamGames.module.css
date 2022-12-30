@@ -1,6 +1,6 @@
 ﻿.gamePanel{
     margin: 15px;
-    padding: 15px;
+    padding: 5px;
 }
 
 .gameInfoPanel{
@@ -10,4 +10,11 @@
 
 .gameImage{
     width: 300px;
+}
+
+.gameName{
+    width: 250px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }

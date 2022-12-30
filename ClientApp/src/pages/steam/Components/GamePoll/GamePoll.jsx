@@ -5,11 +5,11 @@ import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import {Rating, styled} from "@mui/material";
-import Paper from "@mui/material/Paper";
+import styles from './GamePoll.module.css';
 
-export default function GamePoll() {
-    
-    const StyledRating = styled(Rating)(({ theme }) => ({
+export default function GamePoll({onChange, poll}) {
+
+    const StyledRating = styled(Rating)(({theme}) => ({
         '& .MuiRating-iconEmpty .MuiSvgIcon-root': {
             color: theme.palette.action.disabled,
         },
@@ -30,12 +30,13 @@ export default function GamePoll() {
     };
 
     function IconContainer(props) {
-        const { value, ...other } = props;
+        const {value, ...other} = props;
         return <span {...other}>{customIcons[value].icon}</span>;
     }
-    
+
     return (<>
-        <Paper xs={6}>
+        {/*<Paper xs={12} elevation={3}>*/}
+        <div className={styles.pollBlock}>
             <div>
                 Wanna play it?
             </div>
@@ -46,9 +47,11 @@ export default function GamePoll() {
                     IconContainerComponent={IconContainer}
                     size='large'
                     getLabelText={(value) => customIcons[value].label}
-                    value={3}
+                    value={parseInt(poll?.rating, 10) ?? 3}
+                    onChange={onChange}
                 />
             </div>
-        </Paper>
+        </div>
+        {/*</Paper>*/}
     </>)
 }

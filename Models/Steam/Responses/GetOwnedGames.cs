@@ -9,7 +9,11 @@ public class GetOwnedGames{
 
 public class GamesResponse{
     [JsonProperty("games")]    
-    public List<SteamGame> Games { get; set; }
+    public List<OwnedGame> Games { get; set; }
     [JsonProperty("game_count")]
     public int Count { get; set; }
+}
+
+public class OwnedGame{
+    public string AppId { get; set; }
 }
