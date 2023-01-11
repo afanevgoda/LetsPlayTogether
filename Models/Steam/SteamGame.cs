@@ -2,7 +2,7 @@
 
 namespace LetsPlayTogether.Models.Steam;
 
-public class SteamGame{
+public class SteamGameDto{
     [JsonProperty("steam_appid")]
     public string AppId { get; set; }
     public float PlaytimeForever { get; set; }
@@ -12,10 +12,10 @@ public class SteamGame{
     [JsonProperty("header_image")]
     public string HeaderImage { get; set; }
     [JsonProperty("categories")]
-    public List<Category> Categories { get; set; }
+    public List<CategoryDto> Categories { get; set; }
 }
 
-public class Category{
+public class CategoryDto{
     public int Id { get; set; }
     
     public string Description { get; set; }

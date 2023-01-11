@@ -18,22 +18,12 @@ public class GamesController  : ControllerBase{
     }
     
     [HttpGet]
-    public async Task<List<Game>> GetMatchedGames([FromQuery]List<string> playerUrls) {
+    public async Task<List<GameDto>> GetMatchedGames([FromQuery]List<string> playerUrls) {
         return await _steamService.GetMatchedGames(playerUrls);
     }
     
     [HttpGet("[action]")]
-    public async Task<List<Game>> GetGames([FromQuery]List<string> gameAppIds) {
+    public async Task<List<GameDto>> GetGames([FromQuery]List<string> gameAppIds) {
         return await _steamService.GetGames(gameAppIds);
-    }
-    
-    [HttpGet("test")]
-    public async void Test() {
-        var newGame = new DataAccess.Models.Game {
-            Name = "testA",
-            HeaderImage = "kek",
-            IconUrl = "lol"
-        };
-        await _games.Add(newGame);
     }
 }

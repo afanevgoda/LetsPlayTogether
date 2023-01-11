@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using DataAccess.Models;
 using DataAccess.Repositories;
 using LetsPlayTogether.Models.DTO;
-using Poll = LetsPlayTogether.Models.DTO.Poll;
 using PollAppVotes = DataAccess.Models.PollAppVotes;
 using ResultVotes = DataAccess.Models.ResultVotes;
+using PollMatchedGame = DataAccess.Models.PollMatchedGame;
 
 namespace LetsPlayTogether.Services;
 
@@ -17,9 +16,9 @@ public class PollService : IPollService{
         _mapper = mapper;
     }
 
-    public async Task<string?> CreatePoll(List<string> playersIds, List<string> gamesIds) {
-        var poll = new DataAccess.Models.Poll {
-            GameIds = gamesIds,
+    public async Task<string?> CreatePoll(List<string> playersIds, List<PollMatchedGame> games) {
+        var poll = new DataAccess.Models.Poll { 
+            Games = games,
             PlayerIds = playersIds
         };
         var pollId = await _polls.Add(poll);
@@ -27,7 +26,7 @@ public class PollService : IPollService{
         return pollId;
     }
 
-    public async Task SubmitPoll(SubmitPollRequest pollRating) {
+    public async Task SubmitPoll(SubmitPollRequestDto pollRating) {
         var pollFromDb = await _polls.Get(pollRating.Id);
 
         if (pollFromDb.Votes == null)
@@ -43,7 +42,7 @@ public class PollService : IPollService{
         await _polls.Update(pollFromDb);
     }
 
-    public async Task<Poll> Get(string pollId) {
-        return _mapper.Map<Poll>(await _polls.Get(pollId));
+    public async Task<PollDto> Get(string pollId) {
+        return _mapper.Map<PollDto>(await _polls.Get(pollId));
     }
 }

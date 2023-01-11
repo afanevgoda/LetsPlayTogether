@@ -1,9 +1,9 @@
 ﻿namespace LetsPlayTogether.Models.Steam.Responses;
 
-public class GetPlayerSummaries{
+public class GetPlayerSummariesDto{
     public PlayersResponse Response { get; set; }
 }
 
 public class PlayersResponse{
-    public List<SteamPlayer> Players { get; set; }
+    public List<SteamPlayerDto> Players { get; set; }
 }

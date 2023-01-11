@@ -2,7 +2,7 @@
 
 namespace LetsPlayTogether.Models.DTO;
 
-public class Game{
+public class GameDto{
     [JsonProperty("steam_appid")]
     public string AppId { get; set; }
 
@@ -14,4 +14,8 @@ public class Game{
     public bool IsOk { get; set; }
     
     public string Tags { get; set; }
+    
+    public int NumberOfOwningPlayers { get; set; }
+    
+    public List<string>? PlayersThatDontHaveGame { get; set; }
 }

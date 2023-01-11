@@ -22,18 +22,19 @@ export function Steam() {
                 .then(async x => {
                     x.votes = [];
                     setPoll(x)
-                    await initGames(x.gameIds);
+                    setMatchedGames(x.games);
+                    // await initGames(x.gameIds);
                 });
         }
     }, [])
 
-    const initGames = async (gamesIds) => {
-        getGames(gamesIds)
-            .then(response => response.json())
-            .then(result => {
-                setMatchedGames(result);
-            });
-    }
+    // const initGames = async (gamesIds) => {
+    //     getGames(gamesIds)
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             setMatchedGames(result);
+    //         });
+    // }
 
     const addPollAnswerForAGame = (appId, rating) => {
         let clonedPoll = {...poll};
@@ -54,7 +55,7 @@ export function Steam() {
 
     const submit = async () => {
         await submitPoll(poll);
-        window.location.href = `${window.location.origin}/poll?pollId=${poll.id}`;
+        window.location.href = `${window.location.origin}/poll?pollid=${poll.id}`;
     }
 
     return (<>

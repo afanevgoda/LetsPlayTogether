@@ -22,7 +22,12 @@ export default function PollGameResult({gameInfo, votes}) {
         return votes?.rating?.filter(x => x === rating)?.length ?? 0;
     }
 
-    const colors = ['', '#F44336', '#F44336', '#FFA726', '#66BB6A', '#66BB6A'];
+    const colors = ['', 
+        '#F44336', 
+        '#F44336', 
+        '#FFA726', 
+        '#8CBB56', 
+        '#8CBB56'];
 
     const progressBar = (rating) => {
         return (<ProgressBar
@@ -49,11 +54,11 @@ export default function PollGameResult({gameInfo, votes}) {
             {progressBar(3)}
         </div>
         <div>
-            <SentimentSatisfiedAltIcon color="success"/>
+            <SentimentSatisfiedAltIcon color="good"/>
             {progressBar(4)}
         </div>
         <div>
-            <SentimentVerySatisfiedIcon color="success"/>
+            <SentimentVerySatisfiedIcon color="good"/>
             {progressBar(5)}
         </div>
     </>);

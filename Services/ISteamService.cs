@@ -5,9 +5,9 @@ namespace LetsPlayTogether.Services;
 
 public interface ISteamService{
 
-    Task<List<Player>> GetPlayersInfo(List<string> userIds);
+    Task<List<PlayerDto>> GetPlayersInfo(IEnumerable<string> userIds);
 
-    Task<List<Game>> GetMatchedGames(List<string> userIds);
+    Task<List<GameDto>> GetMatchedGames(IEnumerable<string> userIds);
 
-    Task<List<Game>> GetGames(List<string> gameAppIds);
+    Task<List<GameDto>> GetGames(IEnumerable<string> gameAppIds);
 }

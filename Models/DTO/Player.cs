@@ -2,7 +2,7 @@
 
 namespace LetsPlayTogether.Models;
 
-public class Player{
+public class PlayerDto{
     
     public string Id { get; set; }
     
@@ -12,5 +12,5 @@ public class Player{
     
     public List<string> OwnedAppIds { get; set; }
     
-    public List<Game> Games { get; set; }
+    public List<GameDto> Games { get; set; }
 }

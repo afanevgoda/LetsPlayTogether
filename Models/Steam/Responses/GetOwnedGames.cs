@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace LetsPlayTogether.Models.Steam;
 
-public class GetOwnedGames{
+public class GetOwnedGamesDto{
     public GamesResponse Response { get; set; }
 }
 

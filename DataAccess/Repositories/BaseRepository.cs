@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Models;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -8,14 +9,14 @@ using MongoDB.Driver.Core.Events;
 namespace DataAccess.Repositories;
 
 public class BaseRepository<T> : IRepository<T> where T: Model {
-    protected readonly IMapper Mapper;
+    private readonly IConfiguration _configuration;
 
-    protected BaseRepository(IMapper mapper) {
-        Mapper = mapper;
+    protected BaseRepository(IConfiguration configuration) {
+        _configuration = configuration;
     }
 
     protected IMongoDatabase GetDatabase() {
-        var mongoConnectionUrl = new MongoUrl("mongodb://localhost:27017");
+        var mongoConnectionUrl = new MongoUrl(_configuration["ConnectionString"]);
         var mongoClientSettings = MongoClientSettings.FromUrl(mongoConnectionUrl);
         mongoClientSettings.ClusterConfigurator = cb => {
             cb.Subscribe<CommandStartedEvent>(e => {
@@ -39,10 +40,8 @@ public class BaseRepository<T> : IRepository<T> where T: Model {
     }
 
     public async Task<string?> Add(T newObject) {
-        var client = new MongoClient("mongodb://localhost:27017");
-        var database = client.GetDatabase("LetsPlayTogether");
         var doc = newObject.ToBsonDocument();
-        await database.GetCollection<BsonDocument>($"{typeof(T).Name.ToLower()}s")
+        await GetDatabase().GetCollection<BsonDocument>($"{typeof(T).Name.ToLower()}s")
             .InsertOneAsync(doc);
         return doc["_id"]?.ToString();
     }

@@ -25,6 +25,9 @@ export default class App extends Component {
                     contrastText: '#60B5D7',
                     main: '#60B5D7',
                 },
+                good: {
+                    main: '#8CBB56'
+                },
                 secondary: {
                     main: '#666768',
                 },

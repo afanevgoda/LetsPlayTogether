@@ -1,6 +1,6 @@
 ﻿namespace LetsPlayTogether.Models.Steam;
 
-public class SteamPlayer{
+public class SteamPlayerDto{
     public string SteamId { get; set; }
     public int CommunityVisibilityState { get; set; }
     public int ProfileState { get; set; }

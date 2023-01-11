@@ -95,9 +95,9 @@ export function SteamPlayers({setMatchedGames, poll, setPoll, isShared}) {
     }
 
     function getResultsLink(poll) {
-        if (poll?.id) return `${window.location.origin}/poll?pollId=${poll.id}`;
+        if (poll?.id) return `${window.location.origin}/poll?pollid=${poll.id}`;
 
-        if (pollId) return `${window.location.origin}/poll?pollId=${pollId}`;
+        if (pollId) return `${window.location.origin}/poll?pollid=${pollId}`;
     }
 
     return (<>

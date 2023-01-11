@@ -1,15 +1,31 @@
 ﻿namespace LetsPlayTogether.Models.DTO;
 
-public class Poll{
+public class PollDto{
     public string Id { get; set; }
     public List<string> PlayerIds { get; set; }
-    public List<string> GameIds { get; set; }
-    public List<PollAppVotes> Votes { get; set; }
-    public List<ResultVotes> Results { get; set; }
+    public List<PollMatchedGameDto> Games { get; set; }
+    public List<PollAppVotesDto> Votes { get; set; }
+    public List<ResultVotesDto> Results { get; set; }
 }
 
-public class ResultVotes{
+public class ResultVotesDto{
     public string AppId { get; set; }
 
     public List<int> Rating { get; set; }
+}
+
+public class PollMatchedGameDto{
+    public string AppId { get; set; }
+
+    public string Name { get; set; }
+
+    public string HeaderImage { get; set; }
+
+    public bool IsOk { get; set; }
+
+    public string Tags { get; set; }
+
+    public int NumberOfOwningPlayers { get; set; }
+
+    public List<string>? PlayersThatDontHaveGame { get; set; }
 }

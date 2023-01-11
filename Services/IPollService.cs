@@ -1,13 +1,13 @@
 ﻿using DataAccess.Models;
 using LetsPlayTogether.Models.DTO;
-using Poll = LetsPlayTogether.Models.DTO.Poll;
+using PollMatchedGame = DataAccess.Models.PollMatchedGame;
 
 namespace LetsPlayTogether.Services;
 
 public interface IPollService{
-    Task<string?> CreatePoll(List<string> playersIds, List<string> gamesIds);
+    Task<string?> CreatePoll(List<string> playersIds, List<PollMatchedGame> games);
     
-    Task SubmitPoll(SubmitPollRequest pollRating);
+    Task SubmitPoll(SubmitPollRequestDto pollRating);
 
-    Task<Poll> Get(string pollId);
+    Task<PollDto> Get(string pollId);
 }

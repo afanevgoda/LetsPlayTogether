@@ -1,6 +1,6 @@
 async function getPlayersInfo(players) {
     let params = players.map((x, i) => i === 0 ? `playerUrls=${x.url}` : `&playerUrls=${x.url}`).join('');
-    return await fetch(`https://localhost:7220/Players?${params}`, {
+    return await fetch(`http://localhost/Players?${params}`, {
         method: 'GET',
         mode: 'cors',
         cache: 'no-cache',
@@ -13,7 +13,8 @@ async function getPlayersInfo(players) {
 
 async function getMatchedGames(players) {
     let params = players.map((x, i) => i === 0 ? `playerUrls=${x.id}` : `&playerUrls=${x.id}`).join('');
-    return await fetch(`https://localhost:7220/Games?${params}`, {
+    // return await fetch(`http://v1581165.hosted-by-vdsina.ru/Games?${params}`, {
+        return await fetch(`http://localhost/Games?${params}`, {
         method: 'GET',
         mode: 'cors',
         cache: 'no-cache',
@@ -26,7 +27,7 @@ async function getMatchedGames(players) {
 
 async function getGames(gamesIds) {
     let params = gamesIds.map((x, i) => i === 0 ? `gameAppIds=${x}` : `&gameAppIds=${x}`).join('');
-    return await fetch(`https://localhost:7220/Games/GetGames?${params}`, {
+    return await fetch(`http://localhost/Games/GetGames?${params}`, {
         method: 'GET',
         mode: 'cors',
         cache: 'no-cache',
@@ -38,7 +39,7 @@ async function getGames(gamesIds) {
 } 
 
 async function createPoll(playersIds, gamesIds) {
-    return await fetch(`https://localhost:7220/Poll/CreatePoll`, {
+    return await fetch(`http://localhost/Poll/CreatePoll`, {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -53,7 +54,7 @@ async function createPoll(playersIds, gamesIds) {
 }
 
 async function submitPoll(poll) {
-    return await fetch(`https://localhost:7220/Poll/SubmitPoll`, {
+    return await fetch(`http://localhost/Poll/SubmitPoll`, {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -66,7 +67,7 @@ async function submitPoll(poll) {
 }
 
 async function getPoll(pollId) {
-    return await fetch(`https://localhost:7220/Poll/GetPoll?pollId=${pollId}`, {
+    return await fetch(`http://localhost/Poll/GetPoll?pollid=${pollId}`, {
         method: 'GET',
         mode: 'cors',
         cache: 'no-cache',
