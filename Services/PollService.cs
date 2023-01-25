@@ -2,6 +2,7 @@
 using DataAccess.Models;
 using DataAccess.Repositories;
 using LetsPlayTogether.Models.DTO;
+using LetsPlayTogether.Models.DTO.Polls;
 using PollAppVotes = DataAccess.Models.PollAppVotes;
 using ResultVotes = DataAccess.Models.ResultVotes;
 using PollMatchedGame = DataAccess.Models.PollMatchedGame;
@@ -9,7 +10,7 @@ using PollMatchedGame = DataAccess.Models.PollMatchedGame;
 namespace LetsPlayTogether.Services;
 
 public class PollService : IPollService{
-    private readonly IRepository<DataAccess.Models.Poll> _polls;
+    private readonly IRepository<Poll> _polls;
     private readonly IGameRepository _games;
     private readonly IMapper _mapper;
 
@@ -20,7 +21,7 @@ public class PollService : IPollService{
     }
 
     public async Task<string?> CreatePoll(List<string> playersIds, IEnumerable<GameDto> games) {
-        var poll = new Poll { 
+        var poll = new Poll {
             Games = _mapper.Map<List<PollMatchedGame>>(games),
             PlayerIds = playersIds
         };
@@ -39,7 +40,7 @@ public class PollService : IPollService{
 
         pollFromDb.Results = pollFromDb.Votes.GroupBy(x => x.AppId)
             .Select(x => new ResultVotes {
-                Rating = x.Select(x => x.Rating).ToList(),
+                Rating = x.Select(y => y.Rating).ToList(),
                 AppId = x.Key
             }).ToList();
         await _polls.Update(pollFromDb);
@@ -48,9 +49,13 @@ public class PollService : IPollService{
     public async Task<PollDto> Get(string pollId) {
         var poll = _mapper.Map<PollDto>(await _polls.Get(pollId));
         var gamesFullInfo = await _games.GetByAppIdList(poll.Games.Select(x => x.AppId));
-        // _mapper.Map<List<PollMatchedGameDto>>(gamesFullInfo);
+        if (gamesFullInfo == null)
+            return poll;
+
         poll.Games.ForEach(x => {
             var game = gamesFullInfo.FirstOrDefault(y => y.AppId == x.AppId);
+            if (game == null)
+                return;
             x.Name = game.Name;
             x.HeaderImage = game.HeaderImage;
         });

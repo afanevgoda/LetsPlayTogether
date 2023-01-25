@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DataAccess.Models;
+﻿using DataAccess.Models;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;

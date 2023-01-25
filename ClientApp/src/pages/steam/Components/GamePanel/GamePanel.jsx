@@ -39,6 +39,7 @@ export default function GamePanel({gameInfo, extraComp}) {
                 className={styles.gameImage}
                 src={gameInfo?.headerImage}
             />
+            <div className={styles.divider}></div>
             {/*<div className={getPlayerNicknamesLabelColor(gameInfo.playersThatDontHaveGame)}>*/}
             {/*    {getPlayerWhoDontHaveGamesLabel(gameInfo.playersThatDontHaveGame)}*/}
             {/*</div>*/}

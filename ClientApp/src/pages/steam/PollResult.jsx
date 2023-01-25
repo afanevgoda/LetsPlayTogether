@@ -32,10 +32,6 @@ export function PollResult() {
         if (poll?.id) return `${window.location.origin}/steam?pollId=${poll?.id}`;
     }
 
-    const onlyPositiveCollection = [];
-    const mehCollection = [];
-    const bannedCollection = [];
-
     useEffect(() => {
         if (games.length === 0) return
 
@@ -66,7 +62,7 @@ export function PollResult() {
                 <h1 style={{color: "#8CBB56"}}>Only positive votes</h1>
                 <Grid container>
                     {gamesByRatings.onlyPositiveCollection.map(x => {
-                        return (<Grid>
+                        return (<Grid xs={12} md={6} lg={4} xl={3}>
                             <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
                         </Grid>)
                     })}
@@ -77,7 +73,7 @@ export function PollResult() {
                 <h6 style={{color: '#B9A074'}}>Someone not really sure about those</h6>
                 <Grid container>
                     {gamesByRatings.mehCollection.map(x => {
-                        return (<Grid>
+                        return (<Grid xs={12} md={6} lg={4} xl={3}>
                             <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
                         </Grid>)
                     })}
@@ -89,7 +85,7 @@ export function PollResult() {
                 <h6 style={{color: '#A34C25'}}>Someone <b>REALLY</b> don't want to play these!</h6>
                 <Grid container>
                     {gamesByRatings.bannedCollection.map(x => {
-                        return (<Grid>
+                        return (<Grid xs={12} md={6} lg={4} xl={3}>
                             <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
                         </Grid>)
                     })}
@@ -101,7 +97,7 @@ export function PollResult() {
                 <h6 style={{color: '#6E6E6E'}}>Seems no one really cares about these games...</h6>
                 <Grid container>
                     {gamesByRatings.withoutAnyVotes.map(x => {
-                        return (<Grid>
+                        return (<Grid xs={12} md={6} lg={4} xl={3}>
                             <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
                         </Grid>)
                     })}

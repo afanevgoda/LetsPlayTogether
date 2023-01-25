@@ -1,5 +1,4 @@
-﻿using LetsPlayTogether.Models;
-using LetsPlayTogether.Models.DTO;
+﻿using LetsPlayTogether.Models.DTO;
 
 namespace LetsPlayTogether.Services;
 

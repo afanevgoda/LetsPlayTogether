@@ -1,4 +1,4 @@
-﻿using LetsPlayTogether.Models;
+﻿using LetsPlayTogether.Models.DTO;
 using LetsPlayTogether.Services;
 using Microsoft.AspNetCore.Mvc;
 

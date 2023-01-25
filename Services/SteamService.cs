@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using DataAccess.Models;
 using DataAccess.Repositories;
-using LetsPlayTogether.Models;
 using LetsPlayTogether.Models.DTO;
 using LetsPlayTogether.Models.Steam;
 using LetsPlayTogether.Models.Steam.Responses;
@@ -49,14 +47,13 @@ public class SteamService : ISteamService{
             gameInfo.PlayersThatDontHaveGame = appIdToPlayerWhoDontOwnIt[gameInfo.AppId];
             gameInfo.NumberOfOwningPlayers = appIdToNumberOfOwningPlayers[gameInfo.AppId];
         }
-        
+
         return gamesInfo;
     }
 
     public async Task<List<GameDto>> GetGames(IEnumerable<string> gameAppIds) {
         var gameInfoList = await GetGameInfoFromApiIfRequired(gameAppIds);
-        var matchedGames = gameInfoList.Where(x => x != null &&
-                                                   x.IsOk &&
+        var matchedGames = gameInfoList.Where(x => x.IsOk &&
                                                    !String.IsNullOrEmpty(x.Tags) &&
                                                    (x.Tags.Contains("Multi-player, , ") ||
                                                     x.Tags.Contains("Co-op") ||
@@ -67,14 +64,13 @@ public class SteamService : ISteamService{
     }
 
     public async Task<List<string>> GetPlayerIds(IEnumerable<string> playersUrls) {
-        using var httpClient = new HttpClient();
-
         var playerVanityUrls = playersUrls.Select(x => x.Split("/")
             .Last(urlParts => !string.IsNullOrEmpty(urlParts)));
-        
-        var result = await Task.WhenAll(playerVanityUrls.Select(async x => await GetIdFromSteamApi(x)).ToArray());
+        var result = await Task.WhenAll(playerVanityUrls.Select(async x => await GetIdFromSteamApi(x))
+            .ToArray());
 
-        return result.ToList();
+        return result.Where(x => !string.IsNullOrEmpty(x))
+            .Cast<string>().ToList();
     }
 
     public async Task<List<PlayerDto>> GetPlayersInfoByIds(IEnumerable<string> userIds) {
@@ -97,7 +93,7 @@ public class SteamService : ISteamService{
         return players;
     }
 
-    public async Task<GameDto> GetGameInfo(string appId) {
+    private async Task<GameDto> GetGameInfo(string appId) {
         using var httpClient = new HttpClient();
         var response = await httpClient.GetAsync($"https://store.steampowered.com/api/appdetails?appids={appId}");
         var gameString = await response.Content.ReadAsStringAsync();
@@ -114,18 +110,19 @@ public class SteamService : ISteamService{
         return game;
     }
 
-    private async Task<string> GetIdFromSteamApi(string vanityUrl) {
+    private async Task<string?> GetIdFromSteamApi(string vanityUrl) {
         if (vanityUrl.Length == 17 && vanityUrl.All(char.IsDigit)) {
             return vanityUrl;
         }
 
-        var response = await new HttpClient().GetAsync($"http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key={_steamKey}&vanityurl={vanityUrl}");
+        var response = await new HttpClient().GetAsync(
+            $"http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key={_steamKey}&vanityurl={vanityUrl}");
         var playersIdsResponseResult = await response.Content.ReadAsStringAsync();
         // todo: if no match?
         var id = JObject.Parse(playersIdsResponseResult)["response"]?["steamid"]?.Value<string>();
         return id;
     }
-    
+
     private async Task<List<string>> GetListOfOwnedAppIds(string userId) {
         using var httpClient = new HttpClient();
         var gamesResponse = await httpClient.GetAsync(
@@ -138,8 +135,9 @@ public class SteamService : ISteamService{
     private async Task<List<GameDto>> GetGameInfoFromApiIfRequired(IEnumerable<string> appIds) {
         List<GameDto> result = new List<GameDto>();
 
-        var gamesFromDb = await _games.GetByAppIdList(appIds);
-        var gamesFromApi = appIds.Where(x => !gamesFromDb.Select(x => x.AppId).Contains(x));
+        var ids = appIds.ToList();
+        var gamesFromDb = await _games.GetByAppIdList(ids);
+        var gamesFromApi = gamesFromDb == null ? ids : ids.Where(x => !gamesFromDb.Select(y => y.AppId).Contains(x));
 
         foreach (var appId in gamesFromApi) {
             try {

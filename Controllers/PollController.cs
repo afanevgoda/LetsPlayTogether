@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using DataAccess.Models;
-using LetsPlayTogether.Models.DTO;
+using LetsPlayTogether.Models.DTO.Polls;
 using LetsPlayTogether.Services;
 using Microsoft.AspNetCore.Mvc;
 

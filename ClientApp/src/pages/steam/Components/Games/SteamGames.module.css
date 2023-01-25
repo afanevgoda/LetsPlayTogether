@@ -9,11 +9,11 @@
 }
 
 .gameImage{
-    width: 300px;
+    width: 100%;
 }
 
 .gameName{
-    width: 250px;
+    /*width: 250px;*/
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -25,4 +25,8 @@
 
 .haveLabel{
     color: #8CBB56;
+}
+
+.divider{
+    margin-top: 10px;
 }

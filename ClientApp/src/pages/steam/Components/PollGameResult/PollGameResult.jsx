@@ -7,7 +7,6 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import ProgressBar from "@ramonak/react-progress-bar";
 import styles from './styles.module.css';
-import Grid from "@mui/material/Unstable_Grid2";
 
 export default function PollGameResult({gameInfo, votes}) {
 
@@ -39,7 +38,7 @@ export default function PollGameResult({gameInfo, votes}) {
         />);
     }
 
-    const results = (<>
+    const results = (<span className={styles.pollContainer}>
         <div>
             <SentimentVeryDissatisfiedIcon color="error"/>
             {progressBar(1)}
@@ -61,7 +60,7 @@ export default function PollGameResult({gameInfo, votes}) {
             <SentimentVerySatisfiedIcon color="good"/>
             {progressBar(5)}
         </div>
-    </>);
+    </span>);
 
     return (<>
         <GamePanel gameInfo={gameInfo} extraComp={results}/>

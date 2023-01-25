@@ -1,6 +1,4 @@
-﻿using DataAccess.Repositories;
-using LetsPlayTogether.Models;
-using LetsPlayTogether.Models.DTO;
+﻿using LetsPlayTogether.Models.DTO;
 using LetsPlayTogether.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,14 +7,14 @@ namespace LetsPlayTogether.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class GamesController  : ControllerBase{
-    private ISteamService _steamService;
-    private IPollService _pollService;
-    private readonly IGameRepository _games;
+    private readonly ISteamService _steamService;
+    private readonly IPollService _pollService;
+    private readonly ILogger<GamesController> _logger;
 
-    public GamesController(ISteamService steamService, IGameRepository games, IPollService pollService) {
-        this._steamService = steamService;
-        this._pollService = pollService;
-        this._games = games;
+    public GamesController(ISteamService steamService, IPollService pollService, ILogger<GamesController> logger) {
+        _steamService = steamService;
+        _pollService = pollService;
+        _logger = logger;
     }
     
     [HttpGet]
@@ -25,6 +23,15 @@ public class GamesController  : ControllerBase{
         var matchedGames = await _steamService.GetMatchedGames(playerIds);
         result.MatchedGames = matchedGames;
         var pollId = await _pollService.CreatePoll(playerIds, matchedGames);
+
+        // todo: better exceptions, better responses if any, better logs
+        if (pollId == null) {
+            _logger.LogError("Couldn't create new poll");
+            throw new Exception("Couldn't create new poll");
+        }
+
+        
+        
         result.PollId = pollId;
         return result;
     }

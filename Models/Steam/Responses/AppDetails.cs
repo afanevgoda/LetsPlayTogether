@@ -3,5 +3,5 @@
 public class AppDetailsDto{
     public bool Success { get; set; }
     
-    public SteamGameDto Data { get; set; }
+    public SteamGameDto Data { get; set; } = null!;
 }

@@ -1,6 +1,7 @@
 ﻿.wrapper {
     display: inline-table;
-    min-width: 150px;
+    /*min-width: 150px;*/
+    width: 90%;
 }
 
 .container {
@@ -9,10 +10,16 @@
 
 .barCompleted {
     background-color: lightblue;
-    width: 80%;
+    width: 90%;
 }
 
 .label {
     font-size: 20px;
     color: green;
+}
+
+.pollContainer{}
+
+.pollContainer div>svg {
+    width: 10%;
 }

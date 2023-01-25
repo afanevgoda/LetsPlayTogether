@@ -1,6 +1,5 @@
-﻿using DataAccess.Models;
-using LetsPlayTogether.Models.DTO;
-using PollMatchedGame = DataAccess.Models.PollMatchedGame;
+﻿using LetsPlayTogether.Models.DTO;
+using LetsPlayTogether.Models.DTO.Polls;
 
 namespace LetsPlayTogether.Services;
 

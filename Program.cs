@@ -1,8 +1,8 @@
 using AutoMapper;
 using DataAccess.Models;
 using DataAccess.Repositories;
-using LetsPlayTogether.Models;
 using LetsPlayTogether.Models.DTO;
+using LetsPlayTogether.Models.DTO.Polls;
 using LetsPlayTogether.Models.Steam;
 using LetsPlayTogether.Models.Steam.Responses;
 using LetsPlayTogether.Services;
@@ -48,7 +48,7 @@ void ConfigureServices(IServiceCollection serviceCollection) {
     serviceCollection.AddSingleton<IGameRepository, GameRepository>();
     serviceCollection.AddSingleton<IRepository<Poll>, PollRepository>();
     serviceCollection.AddTransient<ISteamService, SteamService>();
-    serviceCollection.AddSingleton<IPollService, PollService>();
+    serviceCollection.AddTransient<IPollService, PollService>();
 }
 
 void ConfigureAutoMapper(IServiceCollection serviceCollection) {
@@ -66,16 +66,14 @@ void ConfigureAutoMapper(IServiceCollection serviceCollection) {
                 ctx.Mapper.Map<List<GameDto>>(s.Response.Games));
         cfg.CreateMap<SteamGameDto, Game>();
 
-        // VVV move to another place (consts?)
-        var mpIds = new List<int> { 1, 9, 38 };
+        // VVV move to another place (constants?)
+        // var mpIds = new List<int> { 1, 9, 38 };
 
         cfg.CreateMap<AppDetailsDto, GameDto>()
             .ConstructUsing((s, ctx) =>
                 ctx.Mapper.Map<GameDto>(s.Data))
             .ForMember(d => d.AppId, s => s.MapFrom(x => x.Data.AppId))
-            .ForMember(d => d.IsOk, s => s.MapFrom(x => x.Success))
-            .ForMember(d => d.Tags, s => s.MapFrom(
-                x => string.Join(", ", x.Data.Categories.Where(c => mpIds.Contains(c.Id)).Select(o => o.Description))));
+            .ForMember(d => d.IsOk, s => s.MapFrom(x => x.Success));
 
         cfg.CreateMap<GameDto, Game>();
         cfg.CreateMap<Game, GameDto>();
@@ -89,7 +87,7 @@ void ConfigureAutoMapper(IServiceCollection serviceCollection) {
             .ForMember(d => d.Id, s => s.MapFrom(x => ObjectId.Parse(x.Id)));
         cfg.CreateMap<ResultVotes, ResultVotesDto>();
         cfg.CreateMap<GameDto, PollMatchedGame>();
-        cfg.CreateMap<DataAccess.Models.Game, PollMatchedGameDto>();
+        cfg.CreateMap<Game, PollMatchedGameDto>();
         cfg.CreateMap<PollMatchedGameDto, PollMatchedGame>();
         cfg.CreateMap<PollMatchedGame, PollMatchedGameDto>();
     });
