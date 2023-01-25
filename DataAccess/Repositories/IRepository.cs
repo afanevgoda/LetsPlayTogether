@@ -4,7 +4,7 @@ public interface IRepository<T>{
 
     public Task<T> Get(string id);
 
-    public List<T> GetList(List<string> ids);
+    public Task<List<T>> GetList(List<string> ids);
 
     public Task<string?> Add(T newObject);
 

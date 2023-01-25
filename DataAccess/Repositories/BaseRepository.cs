@@ -23,7 +23,6 @@ public class BaseRepository<T> : IRepository<T> where T: Model {
                 Console.WriteLine($"{e.CommandName} - {e.Command.ToJson()}");
             });
         };
-        // var client = new MongoClient("mongodb://localhost:27017");
         return new MongoClient(mongoClientSettings).GetDatabase("LetsPlayTogether");
     }
     
@@ -35,8 +34,12 @@ public class BaseRepository<T> : IRepository<T> where T: Model {
         return BsonSerializer.Deserialize<T>(await result.FirstOrDefaultAsync());
     }
 
-    public List<T> GetList(List<string> ids) {
-        throw new NotImplementedException();
+    public async Task<List<T>> GetList(List<string> ids) {
+        var database = GetDatabase();
+        var filter = Builders<BsonDocument>.Filter.In("_id", ids);
+        var result = await database.GetCollection<BsonDocument>($"{typeof(T).Name.ToLower()}s")
+            .FindAsync(filter);
+        return BsonSerializer.Deserialize<List<T>>(await result.FirstOrDefaultAsync());
     }
 
     public async Task<string?> Add(T newObject) {

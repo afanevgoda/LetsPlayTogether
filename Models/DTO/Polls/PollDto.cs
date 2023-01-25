@@ -21,10 +21,6 @@ public class PollMatchedGameDto{
 
     public string HeaderImage { get; set; }
 
-    public bool IsOk { get; set; }
-
-    public string Tags { get; set; }
-
     public int NumberOfOwningPlayers { get; set; }
 
     public List<string>? PlayersThatDontHaveGame { get; set; }

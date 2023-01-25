@@ -12,7 +12,7 @@ async function getPlayersInfo(players) {
 }
 
 async function getMatchedGames(players) {
-    let params = players.map((x, i) => i === 0 ? `playerUrls=${x.id}` : `&playerUrls=${x.id}`).join('');
+    let params = players.map((x, i) => i === 0 ? `playerIds='${x.id}'` : `&playerIds='${x.id}'`).join('');
     // return await fetch(`http://v1581165.hosted-by-vdsina.ru/Games?${params}`, {
         return await fetch(`http://localhost/Games?${params}`, {
         method: 'GET',

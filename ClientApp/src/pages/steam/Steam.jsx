@@ -12,9 +12,9 @@ export function Steam() {
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
-        if (params.has('poll')) {
+        if (params.has('pollId')) {
             setIsShare(true);
-            const pollId = params.get('poll');
+            const pollId = params.get('pollId');
             getPoll(pollId)
                 .then(x => {
                     return x.json();
@@ -55,7 +55,7 @@ export function Steam() {
 
     const submit = async () => {
         await submitPoll(poll);
-        window.location.href = `${window.location.origin}/poll?pollid=${poll.id}`;
+        window.location.href = `${window.location.origin}/poll?pollId=${poll.id}`;
     }
 
     return (<>

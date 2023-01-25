@@ -8,12 +8,12 @@ import GamePanel from "../GamePanel/GamePanel";
 import _ from 'lodash';
 
 export function SteamGames({matchedGames, addPollAnswerForAGame, poll}) {
-
-
+    
     const groupsByNumberOfOwningPlayers = _.groupBy(matchedGames, x => x.numberOfOwningPlayers);
 
     const getSectionName = (numberOfOwningPlayers) => {
-        if (numberOfOwningPlayers === 0) return 'Nobody has these games... weird'; 
+        if (numberOfOwningPlayers === 0) return 'Nobody has these games... weird';
+        if (numberOfOwningPlayers === 1) return 'Only one of the party have these';
         else return `${numberOfOwningPlayers} teammates have these games`;
     };
 

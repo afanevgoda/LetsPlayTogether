@@ -7,7 +7,7 @@ public class Poll : Model{
     [BsonElement("playerIds")] public List<string> PlayerIds { get; set; }
 
     [BsonElement("games")] public List<PollMatchedGame> Games { get; set; }
-
+    
     [BsonElement("votes")] public List<PollAppVotes>? Votes { get; set; }
 
     [BsonElement("results")] public List<ResultVotes> Results { get; set; }
@@ -27,10 +27,6 @@ public class ResultVotes{
 
 public class PollMatchedGame{
     public string AppId { get; set; }
-
-    public string Name { get; set; }
-
-    public string HeaderImage { get; set; }
 
     public bool IsOk { get; set; }
 

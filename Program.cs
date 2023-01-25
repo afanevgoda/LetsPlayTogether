@@ -45,9 +45,9 @@ app.Run();
 
 
 void ConfigureServices(IServiceCollection serviceCollection) {
-    serviceCollection.AddTransient<ISteamService, SteamService>();
     serviceCollection.AddSingleton<IGameRepository, GameRepository>();
     serviceCollection.AddSingleton<IRepository<Poll>, PollRepository>();
+    serviceCollection.AddTransient<ISteamService, SteamService>();
     serviceCollection.AddSingleton<IPollService, PollService>();
 }
 
@@ -89,6 +89,7 @@ void ConfigureAutoMapper(IServiceCollection serviceCollection) {
             .ForMember(d => d.Id, s => s.MapFrom(x => ObjectId.Parse(x.Id)));
         cfg.CreateMap<ResultVotes, ResultVotesDto>();
         cfg.CreateMap<GameDto, PollMatchedGame>();
+        cfg.CreateMap<DataAccess.Models.Game, PollMatchedGameDto>();
         cfg.CreateMap<PollMatchedGameDto, PollMatchedGame>();
         cfg.CreateMap<PollMatchedGame, PollMatchedGameDto>();
     });

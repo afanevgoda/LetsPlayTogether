@@ -1,6 +1,6 @@
 ﻿import React, {useEffect, useState} from 'react';
 import _ from 'lodash';
-import {getGames, getPoll} from '../../service/api';
+import {getPoll} from '../../service/api';
 import PollGameResult from "./Components/PollGameResult/PollGameResult";
 import Grid from "@mui/material/Unstable_Grid2";
 
@@ -15,9 +15,9 @@ export function PollResult() {
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
 
-        if (!params.has('pollid')) return;
+        if (!(params.has('pollId') || params.has('pollid'))) return;
 
-        getPoll(params.get('pollid'))
+        getPoll(params.get('pollId'))
             .then(x => x.json())
             .then(x => {
                 setPoll(x);
@@ -29,7 +29,7 @@ export function PollResult() {
     function getShareLink() {
         // if (window.location.search.includes('poll')) return window.location.href;
 
-        if (poll?.id) return `${window.location.origin}/steam?poll=${poll?.id}`;
+        if (poll?.id) return `${window.location.origin}/steam?pollId=${poll?.id}`;
     }
 
     const onlyPositiveCollection = [];
@@ -62,49 +62,51 @@ export function PollResult() {
     return (<>
         <div>
             <span>Share this poll: {getShareLink()}</span>
-            <h1 style={{color: "#8CBB56"}}>Only positive votes</h1>
-            <Grid container>
-                {gamesByRatings.onlyPositiveCollection.map(x => {
-                    return (<Grid>
-                        <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
-                    </Grid>)
-                })}
-            </Grid>
+            {gamesByRatings.onlyPositiveCollection.length > 0 && <>
+                <h1 style={{color: "#8CBB56"}}>Only positive votes</h1>
+                <Grid container>
+                    {gamesByRatings.onlyPositiveCollection.map(x => {
+                        return (<Grid>
+                            <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
+                        </Grid>)
+                    })}
+                </Grid>
+            </>}
+            {gamesByRatings.mehCollection.length > 0 && <>
+                <h1 style={{color: '#B9A074'}}>Has 'meh' votes</h1>
+                <h6 style={{color: '#B9A074'}}>Someone not really sure about those</h6>
+                <Grid container>
+                    {gamesByRatings.mehCollection.map(x => {
+                        return (<Grid>
+                            <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
+                        </Grid>)
+                    })}
+                </Grid>
+            </>}
 
-            <h1 style={{color: '#B9A074'}}>Has 'meh' votes</h1>
-            <h6 style={{color: '#B9A074'}}>Someone not really sure about those</h6>
-            <Grid container>
-                {gamesByRatings.mehCollection.map(x => {
-                    return (<Grid>
-                        <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
-                    </Grid>)
-                })}
-            </Grid>
+            {gamesByRatings.bannedCollection.length > 0 && <>
+                <h1 style={{color: '#A34C25'}}>Has negative votes</h1>
+                <h6 style={{color: '#A34C25'}}>Someone <b>REALLY</b> don't want to play these!</h6>
+                <Grid container>
+                    {gamesByRatings.bannedCollection.map(x => {
+                        return (<Grid>
+                            <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
+                        </Grid>)
+                    })}
+                </Grid>
+            </>}
 
-            <h1 style={{color: '#A34C25'}}>Has negative votes</h1>
-            <h6 style={{color: '#A34C25'}}>Someone <b>REALLY</b> don't want to play these!</h6>
-            <Grid container>
-                {gamesByRatings.bannedCollection.map(x => {
-                    return (<Grid>
-                        <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
-                    </Grid>)
-                })}
-            </Grid>
-
-            <h1 style={{color: '#6E6E6E'}}>No votes</h1>
-            <h6 style={{color: '#6E6E6E'}}>Seems like no one really cares about these games...</h6>
-            <Grid container>
-                {gamesByRatings.withoutAnyVotes.map(x => {
-                    return (<Grid>
-                        <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
-                    </Grid>)
-                })}
-            </Grid>
-            {/*<Grid container>*/}
-            {/*    {games.map(x => <Grid>*/}
-            {/*        <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>*/}
-            {/*    </Grid>)}*/}
-            {/*</Grid>*/}
+            {gamesByRatings.withoutAnyVotes.length > 0 && <>
+                <h1 style={{color: '#6E6E6E'}}>No votes</h1>
+                <h6 style={{color: '#6E6E6E'}}>Seems no one really cares about these games...</h6>
+                <Grid container>
+                    {gamesByRatings.withoutAnyVotes.map(x => {
+                        return (<Grid>
+                            <PollGameResult gameInfo={x} votes={poll?.results?.find(p => p.appId === x.appId)}/>
+                        </Grid>)
+                    })}
+                </Grid>
+            </>}
         </div>
     </>);
 }

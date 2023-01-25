@@ -44,18 +44,19 @@ export function SteamPlayers({setMatchedGames, poll, setPoll, isShared}) {
         getMatchedGames(info)
             .then(response => response.json())
             .then(result => {
-                setMatchedGames(result);
-                createPoll(players, result)
-                    .then(x => x.text())
-                    .then(x => {
-                        setPollId(x);
-                        setPoll({id: x});
-                    });
+                setMatchedGames(result.matchedGames);
+                setPollId(result.pollId);
+                setPoll({id: result.pollId});
+
+                // createPoll(players, result)
+                //     .then(x => x.text())
+                //     .then(x => {
+                //     });
             });
     }
 
     const playerInputComp = (player) => {
-        return (<Grid xs={2} key={player.tempId}>
+        return (<Grid xs={4} key={player.tempId}>
             <Paper
                 className={styles.playerPanel}
             >
@@ -75,15 +76,16 @@ export function SteamPlayers({setMatchedGames, poll, setPoll, isShared}) {
         </Grid>)
     };
 
-    const playerPanelComp = (nickname, avatarUrl) => {
-        return (<Grid xs={3} id={nickname} key={nickname}>
-            <Paper className={styles.playerInfoPanel}>
+    const playerPanelComp = ({nickname, avatarUrl}) => {
+        return (
+            <Grid xs={3} id={nickname} key={nickname}>
+                <Paper className={styles.playerInfoPanel}>
                 <span className={styles.playerAvatar}>
                     <img src={avatarUrl} alt={"none"}></img>
                 </span>
-                <span className={styles.nickname}>{nickname}</span>
-            </Paper>
-        </Grid>)
+                    <span className={styles.nickname}>{nickname}</span>
+                </Paper>
+            </Grid>)
     };
 
     function getShareLink(poll) {
@@ -130,13 +132,7 @@ export function SteamPlayers({setMatchedGames, poll, setPoll, isShared}) {
         </Button>}
         <Divider/>
         <Grid container spacing={2} className={styles.gamesMainGrid}>
-            {playersInfo.map(x => playerPanelComp(x.nickname, x.avatarUrl))}
+            {playersInfo.map(playerInfo => playerPanelComp(playerInfo))}
         </Grid>
-        {/*<Button*/}
-        {/*    variant='primary'*/}
-        {/*    size="small"*/}
-        {/*    onClick={getGames}>*/}
-        {/*    Get common games!*/}
-        {/*</Button>*/}
     </>)
 }

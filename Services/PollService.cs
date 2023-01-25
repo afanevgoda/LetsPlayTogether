@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DataAccess.Models;
 using DataAccess.Repositories;
 using LetsPlayTogether.Models.DTO;
 using PollAppVotes = DataAccess.Models.PollAppVotes;
@@ -9,16 +10,18 @@ namespace LetsPlayTogether.Services;
 
 public class PollService : IPollService{
     private readonly IRepository<DataAccess.Models.Poll> _polls;
+    private readonly IGameRepository _games;
     private readonly IMapper _mapper;
 
-    public PollService(IRepository<DataAccess.Models.Poll> polls, IMapper mapper) {
+    public PollService(IRepository<Poll> polls, IMapper mapper, IGameRepository games) {
         _polls = polls;
         _mapper = mapper;
+        _games = games;
     }
 
-    public async Task<string?> CreatePoll(List<string> playersIds, List<PollMatchedGame> games) {
-        var poll = new DataAccess.Models.Poll { 
-            Games = games,
+    public async Task<string?> CreatePoll(List<string> playersIds, IEnumerable<GameDto> games) {
+        var poll = new Poll { 
+            Games = _mapper.Map<List<PollMatchedGame>>(games),
             PlayerIds = playersIds
         };
         var pollId = await _polls.Add(poll);
@@ -43,6 +46,14 @@ public class PollService : IPollService{
     }
 
     public async Task<PollDto> Get(string pollId) {
-        return _mapper.Map<PollDto>(await _polls.Get(pollId));
+        var poll = _mapper.Map<PollDto>(await _polls.Get(pollId));
+        var gamesFullInfo = await _games.GetByAppIdList(poll.Games.Select(x => x.AppId));
+        // _mapper.Map<List<PollMatchedGameDto>>(gamesFullInfo);
+        poll.Games.ForEach(x => {
+            var game = gamesFullInfo.FirstOrDefault(y => y.AppId == x.AppId);
+            x.Name = game.Name;
+            x.HeaderImage = game.HeaderImage;
+        });
+        return poll;
     }
 }

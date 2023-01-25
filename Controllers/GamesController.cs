@@ -10,16 +10,23 @@ namespace LetsPlayTogether.Controllers;
 [Route("[controller]")]
 public class GamesController  : ControllerBase{
     private ISteamService _steamService;
+    private IPollService _pollService;
     private readonly IGameRepository _games;
 
-    public GamesController(ISteamService steamService, IGameRepository games) {
+    public GamesController(ISteamService steamService, IGameRepository games, IPollService pollService) {
         this._steamService = steamService;
+        this._pollService = pollService;
         this._games = games;
     }
     
     [HttpGet]
-    public async Task<List<GameDto>> GetMatchedGames([FromQuery]List<string> playerUrls) {
-        return await _steamService.GetMatchedGames(playerUrls);
+    public async Task<MatchedGameResponse> GetMatchedGames([FromQuery]List<string> playerIds) {
+        var result = new MatchedGameResponse();
+        var matchedGames = await _steamService.GetMatchedGames(playerIds);
+        result.MatchedGames = matchedGames;
+        var pollId = await _pollService.CreatePoll(playerIds, matchedGames);
+        result.PollId = pollId;
+        return result;
     }
     
     [HttpGet("[action]")]

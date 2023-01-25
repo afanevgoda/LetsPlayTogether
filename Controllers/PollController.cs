@@ -17,18 +17,18 @@ public class PollController : ControllerBase{
         _mapper = mapper;
     }
 
-    // public async Task<string?> CreatePoll([FromBody]CreatePollRequest request) {
+    // public async Task<string?> CreatePoll([FromBody] CreatePollRequestDto request) {
     //     return await _pollService.CreatePoll(request.PlayersIds, request.GamesIds);
     // }
-    
+
     [HttpPost]
     public async Task SubmitPoll([FromBody] SubmitPollRequestDto pollRating) {
         await _pollService.SubmitPoll(pollRating);
     }
-    
+
     [HttpGet]
     public async Task<PollDto> GetPoll(string pollId) {
-        var pollFromDb =  await _pollService.Get(pollId);
+        var pollFromDb = await _pollService.Get(pollId);
         return _mapper.Map<PollDto>(pollFromDb);
     }
 }

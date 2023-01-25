@@ -3,8 +3,6 @@
 public class SubmitPollRequestDto{
     public string Id { get; set; }
     
-    public List<GameDto> Games { get; set; }
-
     public List<PollAppVotesDto> Votes { get; set; }
 }
 

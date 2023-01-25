@@ -5,7 +5,7 @@ using PollMatchedGame = DataAccess.Models.PollMatchedGame;
 namespace LetsPlayTogether.Services;
 
 public interface IPollService{
-    Task<string?> CreatePoll(List<string> playersIds, List<PollMatchedGame> games);
+    Task<string?> CreatePoll(List<string> playersIds, IEnumerable<GameDto> games);
     
     Task SubmitPoll(SubmitPollRequestDto pollRating);
 

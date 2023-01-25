@@ -4,7 +4,7 @@
     color: #60B5D7;
     margin-top: 25px;
     margin-bottom: 25px;
-    background: linear-gradient(115deg, #234255, #23262C, #23262C, #23262C);
+    background: linear-gradient(115deg, #234255FF, #23262CFF, #23262CFF, #23262CFF) !important;
 }
 
 .nickname {
@@ -16,16 +16,12 @@
     padding: 0 10px;
     height: 35px;
     display: flex;
-    width: 200px;
-    background: linear-gradient(75deg, #234255, #23262C, #23262C);
+    background: linear-gradient(75deg, #234255, #23262C, #23262C) !important;
 }
 
 .playerInfoPanel {
     margin: 0 5px;
     padding: 10px 10px;
-    /*height: 35px;*/
-    /*display: flex;*/
-    /*width: 200px;*/
     background: linear-gradient(75deg, #234255, #23262C, #23262C);
 }
 
@@ -35,10 +31,10 @@
 
 .playerInput {
     height: 35px;
+    width: 100%;
 }
 
 .addTeammateButton {
-    border: 5px white;
     height: 35px;
 }
 

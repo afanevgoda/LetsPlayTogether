@@ -15,7 +15,8 @@ public class PlayersController : ControllerBase{
     
     [HttpGet]
     public async Task<List<PlayerDto>> GetPlayersInfo([FromQuery]List<string> playerUrls) {
-        return await _steamService.GetPlayersInfo(playerUrls);
+        var playerIds = await _steamService.GetPlayerIds(playerUrls);
+        return await _steamService.GetPlayersInfoByIds(playerIds);
     }
 
 }

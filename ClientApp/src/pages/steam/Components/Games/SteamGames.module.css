@@ -18,3 +18,11 @@
     overflow: hidden;
     white-space: nowrap;
 }
+
+.dontHaveLabel{
+    color: #A34C25;
+}
+
+.haveLabel{
+    color: #8CBB56;
+}

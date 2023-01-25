@@ -14,17 +14,15 @@ public class SteamService : ISteamService{
     private readonly string _steamKey;
     private readonly IMapper _mapper;
     private readonly IGameRepository _games;
-    private readonly IPollService _pollService;
 
-    public SteamService(IConfiguration configuration, IMapper mapper, IGameRepository games, IPollService pollService) {
+    public SteamService(IConfiguration configuration, IMapper mapper, IGameRepository games) {
         _steamKey = configuration["SteamApiKey"];
         _mapper = mapper;
         _games = games;
-        _pollService = pollService;
     }
 
-    public async Task<List<GameDto>> GetMatchedGames(IEnumerable<string> userIds) {
-        var playersInfo = await GetPlayersInfo(userIds);
+    public async Task<List<GameDto>> GetMatchedGames(IEnumerable<string> playersIds) {
+        var playersInfo = await GetPlayersInfoByIds(playersIds);
         var appIdToPlayerWhoDontOwnIt = new Dictionary<string, List<string>>();
         var appIdToNumberOfOwningPlayers = new Dictionary<string, int>();
 
@@ -51,28 +49,35 @@ public class SteamService : ISteamService{
             gameInfo.PlayersThatDontHaveGame = appIdToPlayerWhoDontOwnIt[gameInfo.AppId];
             gameInfo.NumberOfOwningPlayers = appIdToNumberOfOwningPlayers[gameInfo.AppId];
         }
-
-        await _pollService.CreatePoll(new List<string>(), _mapper.Map<List<PollMatchedGame>>(gamesInfo));
-
+        
         return gamesInfo;
     }
 
     public async Task<List<GameDto>> GetGames(IEnumerable<string> gameAppIds) {
-        var matchedGames = new List<GameDto>();
-
         var gameInfoList = await GetGameInfoFromApiIfRequired(gameAppIds);
-        matchedGames = gameInfoList.Where(x => x != null &&
-                                               x.IsOk &&
-                                               x.Tags != null &&
-                                               (x.Tags.Contains("Multi-player, , ") ||
-                                                x.Tags.Contains("Co-op") ||
-                                                x.Tags.Contains("Online Co-op")))
+        var matchedGames = gameInfoList.Where(x => x != null &&
+                                                   x.IsOk &&
+                                                   !String.IsNullOrEmpty(x.Tags) &&
+                                                   (x.Tags.Contains("Multi-player, , ") ||
+                                                    x.Tags.Contains("Co-op") ||
+                                                    x.Tags.Contains("Online Co-op")))
             .ToList();
 
         return matchedGames;
     }
 
-    public async Task<List<PlayerDto>> GetPlayersInfo(IEnumerable<string> userIds) {
+    public async Task<List<string>> GetPlayerIds(IEnumerable<string> playersUrls) {
+        using var httpClient = new HttpClient();
+
+        var playerVanityUrls = playersUrls.Select(x => x.Split("/")
+            .Last(urlParts => !string.IsNullOrEmpty(urlParts)));
+        
+        var result = await Task.WhenAll(playerVanityUrls.Select(async x => await GetIdFromSteamApi(x)).ToArray());
+
+        return result.ToList();
+    }
+
+    public async Task<List<PlayerDto>> GetPlayersInfoByIds(IEnumerable<string> userIds) {
         using var httpClient = new HttpClient();
 
         var parameters = string.Join(",", userIds);
@@ -109,6 +114,18 @@ public class SteamService : ISteamService{
         return game;
     }
 
+    private async Task<string> GetIdFromSteamApi(string vanityUrl) {
+        if (vanityUrl.Length == 17 && vanityUrl.All(char.IsDigit)) {
+            return vanityUrl;
+        }
+
+        var response = await new HttpClient().GetAsync($"http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key={_steamKey}&vanityurl={vanityUrl}");
+        var playersIdsResponseResult = await response.Content.ReadAsStringAsync();
+        // todo: if no match?
+        var id = JObject.Parse(playersIdsResponseResult)["response"]?["steamid"]?.Value<string>();
+        return id;
+    }
+    
     private async Task<List<string>> GetListOfOwnedAppIds(string userId) {
         using var httpClient = new HttpClient();
         var gamesResponse = await httpClient.GetAsync(
